@@ -1,28 +1,46 @@
 
-void createDessert(char *name, int price, char *topping, double calories, int time, int n)
+struct NodeFood *createDessert(char *name, int price, char *topping, double calories, int time)
 {
-	strcpy(Food[n].type, "Dessert");
-	strcpy(Food[n].name, name);
-	strcpy(Food[n].topping, topping);
-	Food[n].price = price;
-	Food[n].calories = calories;
-	Food[n].cookingTime = time;
-	FILE *fp = fopen("menu.txt", "w"); //FILE
-	fprintf(fp, "%d %s %d %s %lf - -\n", n, Food[n].name, Food[n].price, Food[n].topping, Food[n].calories);
-	fclose(fp);
+   struct NodeFood *temp = (NodeFood*)malloc(sizeof(NodeFood));
+   strcpy(temp->Food.type, "Dessert");
+   strcpy(temp->Food.name, name);
+   strcpy(temp->Food.topping, topping);
+   strcpy(temp->Food.flavor, "-");
+   temp->Food.size = '-';
+   temp->Food.price = price;
+   temp->Food.calories = calories;
+   temp->Food.cookingTime = time;
+   temp->next = temp->prev = NULL;
+   return temp;
 }
 
-void createDrink(char *name, int price, char *flavor, char size, int time, int n)
+struct NodeFood *createDrink(char *name, int price, char *flavor, char size, int time)
 {
-	strcpy(Food[n].type, "Drink");
-	strcpy(Food[n].name, name);
-	strcpy(Food[n].flavor, flavor);
-	Food[n].price = price;
-	Food[n].size = size;
-	Food[n].cookingTime = time;
-	FILE *fp = fopen("menu.txt", "w"); //FILE
-	fprintf(fp, "%d %s %d - - %s %c\n", n, Food[n].name, Food[n].price, Food[n].flavor, Food[n].size);
-	fclose(fp);
+   struct NodeFood *temp = (NodeFood*)malloc(sizeof(NodeFood));
+   strcpy(temp->Food.type, "Drink");
+   strcpy(temp->Food.name, name);
+   strcpy(temp->Food.flavor, flavor);
+   strcpy(temp->Food.topping, "-");
+   temp->Food.size = size;
+   temp->Food.price = price;
+   temp->Food.calories = 0;
+   temp->Food.cookingTime = time;
+   temp->next = temp->prev = NULL;
+   return temp;
+}
+
+void pushNodeFood(struct NodeFood* temp)
+{
+	if(!head)
+	{
+		head = tail = temp;
+	}
+	else
+	{
+		tail->next = temp;
+		temp->prev = tail;
+		tail = temp;
+	}
 }
 
 void addFood()
@@ -83,10 +101,11 @@ void dessertMenu()
 	}while(caloriesTemp < 1.00 || caloriesTemp > 99.00);
 	
 	timeTemp = cookingTimeDessert(extraTime);
-	createDessert(nameTemp, priceTemp, toppingTemp, caloriesTemp, timeTemp, n);
-	printf("\nSuccessfully added a new menu!");
+	pushNodeFood(createDessert(nameTemp, priceTemp, toppingTemp, caloriesTemp, timeTemp));
 	n++;
-	sleep(); //Sleep function
+	printf("\nSuccessfully added a new menu!\n");
+	getchar(); //Makan enter doank (better than sleep function :v)
+	getchar();
 	main_menu();
 }
 
@@ -123,10 +142,11 @@ void drinkMenu()
 	}while(sizeTemp != 'S' && sizeTemp != 'M' && sizeTemp != 'L');
 	
 	timeTemp = cookingTimeDrink(flavorTemp);
-	printf("\nSuccessfully added a new menu!");
-	createDrink(nameTemp, priceTemp, flavorTemp, sizeTemp, timeTemp, n);
+	pushNodeFood(createDrink(nameTemp, priceTemp, flavorTemp, sizeTemp, timeTemp));
 	n++;
-	sleep(); //Sleep function
+	printf("\nSuccessfully added a new menu!\n");
+	getchar();
+	getchar();
 	main_menu();
 }
 
